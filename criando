@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUPECA - Premium Clothing Brand</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom CSS for elements that need more styling */
+        .hero {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .newsletter-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .cart-panel {
+            transition: all 0.3s ease;
+        }
+        
+        /* Animation for cart notification */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden">
+        <div class="flex justify-end p-6">
+            <button id="closeMobileMenu" class="text-white text-3xl">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="flex flex-col items-center space-y-8 mt-12">
+            <a href="#" class="text-white text-xl hover:text-gray-300">Home</a>
+            <a href="#shop" class="text-white text-xl hover:text-gray-300">Shop</a>
+            <a href="#collections" class="text-white text-xl hover:text-gray-300">Collections</a>
+            <a href="#about" class="text-white text-xl hover:text-gray-300">About</a>
+            <a href="#contact" class="text-white text-xl hover:text-gray-300">Contact</a>
+        </nav>
+    </div>
+
+    <!-- Cart Panel -->
+    <div id="cartPanel" class="cart-panel fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-40 transform translate-x-full transition-transform overflow-y-auto">
+        <div class="p-4 border-b">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold">Your Cart (0)</h3>
+                <button id="closeCart" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-4">
+            <div id="cartItems" class="space-y-4">
+                <!-- Cart items will be added here dynamically -->
+                <p class="text-gray-500 text-center py-8">Your cart is empty</p>
+            </div>
+            <div class="border-t mt-4 pt-4">
+                <div class="flex justify-between mb-2">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal">$0.00</span>
+                </div>
+                <div class="flex justify-between mb-4">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                <button class="w-full bg-black text-white py-3 hover:bg-gray-800 transition">Checkout</button>
+                <p class="text-xs text-gray-500 mt-2 text-center">Taxes calculated at checkout</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-8">
+                    <button id="mobileMenuButton" class="md:hidden text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <a href="#" class="text-2xl font-bold tracking-wider">LUPECA</a>
+                </div>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-black">Home</a>
+                    <a href="#shop" class="text-gray-700 hover:text-black">Shop</a>
+                    <a href="#collections" class="text-gray-700 hover:text-black">Collections</a>
+                    <a href="#about" class="text-gray-700 hover:text-black">About</a>
+                    <a href="#contact" class="text-gray-700 hover:text-black">Contact</a>
+                </nav>
+                
+                <div class="flex items-center space-x-6">
+                    <button class="text-gray-700 hover:text-black">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="text-gray-700 hover:text-black">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button id="cartButton" class="relative text-gray-700 hover:text-black">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero text-white py-32 px-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">Elevate Your Style</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">Discover the perfect blend of comfort and sophistication with LUPECA's premium clothing collection.</p>
+            <a href="#shop" class="bg-white text-black px-8 py-3 inline-block font-medium hover:bg-gray-100 transition">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">Shop by Category</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="#" class="group relative overflow-hidden h-48 md:h-64 rounded-lg">
+                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80" alt="Men's Collection" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <h3 class="text-white text-xl font-medium">Men's</h3>
+                    </div>
+                </a>
+                <a href="#" class="group relative overflow-hidden h-48 md:h-64 rounded-lg">
+                    <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Women's Collection" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <h3 class="text-white text-xl font-medium">Women's</h3>
+                    </div>
+                </a>
+                <a href="#" class="group relative overflow-hidden h-48 md:h-64 rounded-lg">
+                    <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80" alt="Accessories" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <h3 class="text-white text-xl font-medium">Accessories</h3>
+                    </div>
+                </a>
+                <a href="#" class="group relative overflow-hidden h-48 md:h-64 rounded-lg">
+                    <img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="New Arrivals" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <h3 class="text-white text-xl font-medium">New Arrivals</h3>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section id="shop" class="py-16 px-4 bg-gray-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-4">Featured Products</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Handcrafted with premium materials and attention to detail</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Product 1 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=776&q=80" alt="Premium T-Shirt" class="w-full h-80 object-cover">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart absolute bottom-0 left-0 right-0 bg-black text-white py-2 opacity-0 hover:opacity-100 transition-opacity duration-300 w-full" data-id="1" data-name="Premium Cotton T-Shirt" data-price="45.00" data-image="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=776&q=80">
+                            Add to Cart
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-lg mb-1">Premium Cotton T-Shirt</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-800 font-medium">$45.00</span>
+                            <div class="flex space-x-1 text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Slim Fit Jeans" class="w-full h-80 object-cover">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart absolute bottom-0 left-0 right-0 bg-black text-white py-2 opacity-0 hover:opacity-100 transition-opacity duration-300 w-full" data-id="2" data-name="Slim Fit Jeans" data-price="89.00" data-image="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80">
+                            Add to Cart
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-lg mb-1">Slim Fit Jeans</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-800 font-medium">$89.00</span>
+                            <div class="flex space-x-1 text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Wool Blend Coat" class="w-full h-80 object-cover">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart absolute bottom-0 left-0 right-0 bg-black text-white py-2 opacity-0 hover:opacity-100 transition-opacity duration-300 w-full" data-id="3" data-name="Wool Blend Coat" data-price="199.00" data-image="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80">
+                            Add to Cart
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-lg mb-1">Wool Blend Coat</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-800 font-medium">$199.00</span>
+                            <div class="flex space-x-1 text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80" alt="Casual Linen Shirt" class="w-full h-80 object-cover">
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart absolute bottom-0 left-0 right-0 bg-black text-white py-2 opacity-0 hover:opacity-100 transition-opacity duration-300 w-full" data-id="4" data-name="Casual Linen Shirt" data-price="65.00" data-image="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80">
+                            Add to Cart
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-lg mb-1">Casual Linen Shirt</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-800 font-medium">$65.00</span>
+                            <div class="flex space-x-1 text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#" class="inline-block border border-black px-8 py-3 font-medium hover:bg-black hover:text-white transition">View All Products</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collections -->
+    <section id="collections" class="py-16 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-4">Our Collections</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Carefully curated for every season and occasion</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="group relative overflow-hidden rounded-lg h-96">
+                    <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Summer Collection" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end p-8">
+                        <div>
+                            <h3 class="text-white text-2xl font-bold mb-2">Summer Collection</h3>
+                            <p class="text-gray-300 mb-4">Lightweight fabrics and vibrant colors for the warm season</p>
+                            <a href="#" class="text-white font-medium hover:underline">Explore Collection</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group relative overflow-hidden rounded-lg h-96">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Winter Essentials" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end p-8">
+                        <div>
+                            <h3 class="text-white text-2xl font-bold mb-2">Winter Essentials</h3>
+                            <p class="text-gray-300 mb-4">Warm and cozy styles to keep you comfortable</p>
+                            <a href="#" class="text-white font-medium hover:underline">Explore Collection</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-16 px-4 bg-gray-100">
+        <div class="container mx-auto max-w-5xl">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-12">
+                    <h2 class="text-3xl font-bold mb-6">Our Story</h2>
+                    <p class="text-gray-700 mb-4">Founded in 2015, LUPECA began as a small boutique with a vision to create timeless, high-quality clothing that combines comfort with sophistication.</p>
+                    <p class="text-gray-700 mb-6">Today, we've grown into a globally recognized brand, but our commitment to craftsmanship and ethical production remains unchanged.</p>
+                    <a href="#" class="inline-block border border-black px-6 py-2 font-medium hover:bg-black hover:text-white transition">Learn More</a>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1607082348824-0a96f21a718d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="LUPECA Store" class="w-full rounded-lg shadow-md">
+                </div>
+            </div>
+            
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold mb-2">100%</div>
+                    <p class="text-gray-600">Organic Cotton</p>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">5+</div>
+                    <p class="text-gray-600">Years in Business</p>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">50+</div>
+                    <p class="text-gray-600">Countries Served</p>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">10K+</div>
+                    <p class="text-gray-600">Happy Customers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="flex space-x-1 text-yellow-400 mr-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="text-gray-500 text-sm">2 weeks ago</span>
+                    </div>
+                    <p class="text-gray-700 mb-4">"The quality of LUPECA's clothing is unmatched. I've had my wool coat for three winters now and it still looks brand new."</p>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah J." class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <h4 class="font-medium">Sarah J.</h4>
+                            <p class="text-gray-500 text-sm">Verified Customer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="flex space-x-1 text-yellow-400 mr-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="text-gray-500 text-sm">1 month ago</span>
+                    </div>
+                    <p class="text-gray-700 mb-4">"I love how LUPECA combines style with comfort. Their t-shirts are my go-to for both casual outings and work from home days."</p>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael T." class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <h4 class="font-medium">Michael T.</h4>
+                            <p class="text-gray-500 text-sm">Verified Customer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter-bg py-20 px-4 text-white">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h2 class="text-3xl font-bold mb-4">Join Our Community</h2>
+            <p class="text-xl mb-8">Subscribe to get 15% off your first order and updates on new collections</p>
+            
+            <form class="flex flex-col sm:flex-row max-w-md mx-auto sm:max-w-xl">
+                <input type="email" placeholder="Your email address" class="flex-grow px-4 py-3 mb-2 sm:mb-0 sm:mr-2 text-gray-900 rounded">
+                <button type="submit" class="bg-black px-6 py-3 font-medium hover:bg-gray-900 transition">Subscribe</button>
+            </form>
+            
+            <p class="text-sm text-gray-300 mt-4">We respect your privacy. Unsubscribe at any time.</p>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="py-16 px-4 bg-gray-50">
+        <div class="container mx-auto max-w-5xl">
+            <h2 class="text-3xl font-bold text-center mb-12">Get In Touch</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-xl font-medium mb-4">Contact Information</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-4 text-gray-700"></i>
+                            <div>
+                                <h4 class="font-medium">Our Store</h4>
+                                <p class="text-gray-600">123 Fashion Avenue, New York, NY 10001</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-phone-alt mt-1 mr-4 text-gray-700"></i>
+                            <div>
+                                <h4 class="font-medium">Phone</h4>
+                                <p class="text-gray-600">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-4 text-gray-700"></i>
+                            <div>
+                                <h4 class="font-medium">Email</h4>
+                                <p class="text-gray-600">hello@lupeca.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-clock mt-1 mr-4 text-gray-700"></i>
+                            <div>
+                                <h4 class="font-medium">Hours</h4>
+                                <p class="text-gray-600">Monday - Friday: 9AM - 6PM</p>
+                                <p class="text-gray-600">Saturday: 10AM - 5PM</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="font-medium mb-3">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-700 hover:text-black"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="text-gray-700 hover:text-black"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-gray-700 hover:text-black"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-gray-700 hover:text-black"><i class="fab fa-pinterest-p"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-medium mb-4">Send Us a Message</h3>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-gray-700 mb-1">Name</label>
+                            <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-black">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-gray-700 mb-1">Email</label>
+                            <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-black">
+                        </div>
+                        <div>
+                            <label for="subject" class="block text-gray-700 mb-1">Subject</label>
+                            <input type="text" id="subject" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-black">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-gray-700 mb-1">Message</label>
+                            <textarea id="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-black"></textarea>
+                        </div>
+                        <button type="submit" class="bg-black text-white px-6 py-3 font-medium hover:bg-gray-800 transition">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">LUPECA</h3>
+                    <p class="text-gray-400">Elevating everyday style with premium, sustainable clothing since 2015.</p>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-4">Shop</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">All Products</a></li>
+                        <li><a href="#" class="hover:text-white">New Arrivals</a></li>
+                        <li><a href="#" class="hover:text-white">Men's</a></li>
+                        <li><a href="#" class="hover:text-white">Women's</a></li>
+                        <li><a href="#" class="hover:text-white">Accessories</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-4">Customer Service</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white">Shipping & Returns</a></li>
+                        <li><a href="#" class="hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="hover:text-white">Track Order</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-4">About</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Our Story</a></li>
+                        <li><a href="#" class="hover:text-white">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="#" class="hover:text-white">Press</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0">© 2023 LUPECA. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" alt="Visa" class="h-8">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg" alt="Mastercard" class="h-8">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" alt="Apple Pay" class="h-8">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/paypal/paypal-original.svg" alt="PayPal" class="h-8">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const overlay = document.getElementById('overlay');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        closeMobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        
+        overlay.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        
+        // Cart Toggle
+        const cartButton = document.getElementById('cartButton');
+        const cartPanel = document.getElementById('cartPanel');
+        const closeCart = document.getElementById('closeCart');
+        
+        cartButton.addEventListener('click', () => {
+            cartPanel.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        closeCart.addEventListener('click', () => {
+            cartPanel.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+        
+        // Cart Functionality
+        let cart = [];
+        const cartCount = document.getElementById('cartCount');
+        const cartItems = document.getElementById('cartItems');
+        const cartSubtotal = document.getElementById('cartSubtotal');
+        
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', () => {
+                const productId = button.getAttribute('data-id');
+                const productName = button.getAttribute('data-name');
+                const productPrice = parseFloat(button.getAttribute('data-price'));
+                const productImage = button.getAttribute('data-image');
+                
+                // Check if product already in cart
+                const existingItem = cart.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        id: productId,
+                        name: productName,
+                        price: productPrice,
+                        image: productImage,
+                        quantity: 1
+                    });
+                }
+                
+                updateCart();
+                
+                // Show cart panel
+                cartPanel.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // Add pulse animation to cart count
+                cartCount.classList.add('pulse');
+                setTimeout(() => {
+                    cartCount.classList.remove('pulse');
+                }, 1000);
+            });
+        });
+        
+        function updateCart() {
+            // Update cart count
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            if (totalItems > 0) {
+                cartCount.classList.remove('hidden');
+            } else {
+                cartCount.classList.add('hidden');
+            }
+            
+            // Update cart items
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty</p>';
+                cartSubtotal.textContent = '$0.00';
+                return;
+            }
+            
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'flex items-start border-b pb-4';
+                cartItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover mr-4">
+                    <div class="flex-grow">
+                        <h4 class="font-medium">${item.name}</h4>
+                        <div class="flex justify-between items-center mt-1">
+                            <div class="flex items-center border rounded">
+                                <button class="decrease-quantity px-2 py-1" data-id="${item.id}">-</button>
+                                <span class="quantity px-2">${item.quantity}</span>
+                                <button class="increase-quantity px-2 py-1" data-id="${item.id}">+</button>
+                            </div>
+                            <span class="font-medium">$${itemTotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <button class="remove-item ml-2 text-gray-500 hover:text-red-500" data-id="${item.id}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                cartItems.appendChild(cartItem);
+            });
+            
+            // Update subtotal
+            cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+            
+            // Add event listeners to quantity buttons
+            document.querySelectorAll('.increase-quantity').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const item = cart.find(item => item.id === id);
+                    if (item) {
+                        item.quantity += 1;
+                        updateCart();
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.decrease-quantity').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const item = cart.find(item => item.id === id);
+                    if (item) {
+                        if (item.quantity > 1) {
+                            item.quantity -= 1;
+                        } else {
+                            // Remove item if quantity reaches 0
+                            cart = cart.filter(item => item.id !== id);
+                        }
+                        updateCart();
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.closest('button').getAttribute('data-id');
+                    cart = cart.filter(item => item.id !== id);
+                    updateCart();
+                });
+            });
+        }
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                        overlay.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
